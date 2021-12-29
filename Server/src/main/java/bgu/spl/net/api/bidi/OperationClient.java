@@ -1,26 +1,35 @@
 package bgu.spl.net.api.bidi;
 
-public class OperationClient implements Operation {
-    private final short opCode;
-    private final String message;
-    private final String userName;
+import java.util.Arrays;
 
-    public OperationClient(short opCode, String message, String userName) {
+public abstract class OperationClient implements Operation {
+    private final short opCode;
+    private int length;
+    byte[] bArr;
+    private final int size=12;
+
+    public OperationClient(short opCode) {
         this.opCode = opCode;
-        this.message = message;
-        this.userName = userName;
+        bArr = new byte[size];
+        this.length = 0;
     }
     public short getOpCode() {
         return opCode;
     }
-    public short getMessageOpCode() {
-        return -1;
-    }
+
     public String getMessage() {
-        return message;
+        return null;
     }
-    public String getUserName() {
-        return userName;
+    public void pushNextByte(byte nextByte) {
+        if (length >= bArr.length) {
+            bArr = Arrays.copyOf(bArr, length * 2);
+        }
+        bArr[length++] = nextByte;
+    }
+    public abstract boolean pushByte(byte nextByte);
+    public String bytesToString(){
+        String output = new String(bArr);
+        bArr = new byte[size];
+        return output;
     }
 }
-

@@ -1,5 +1,9 @@
 package bgu.spl.net.api.bidi;
 import bgu.spl.net.api.MessageEncoderDecoder;
+import bgu.spl.net.api.bidi.Operations.ClientOperations.*;
+import bgu.spl.net.api.bidi.Operations.ServerOperations.ACKOperation;
+import bgu.spl.net.api.bidi.Operations.ServerOperations.ErrorOperation;
+import bgu.spl.net.api.bidi.Operations.ServerOperations.NotificationOperation;
 
 import java.util.Arrays;
 
@@ -7,39 +11,44 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
     int length = 0;
     private byte[] bytes = new byte[1 << 10];
     short opCode=-1;
+    OperationClient operation=null;
     @Override
     public Operation decodeNextByte(byte nextByte) {
         if (opCode==-1)
         {
             pushByte(nextByte);
-            if(length==2)
-                opCode= bytesToShort(Arrays.copyOfRange(bytes, 0,1));
+            if(length==2) {
+                opCode = bytesToShort(Arrays.copyOfRange(bytes, 0, 1));
+                switch(opCode) {
+                    case 1:
+                        operation = new RegisterOperation(opCode);
+                    case 2:
+                        operation = new LoginOperation(opCode);
+                    case 3:
+                        operation = new LogoutOperation(opCode);
+                    case 4:
+                        operation = new FollowOperation(opCode);
+                    case 5:
+                        operation = new PostMessageOperation(opCode);
+                    case 6:
+                        operation = new PrivateMessageOperation(opCode);
+                    case 7:
+                        operation = new LogStatOperation(opCode);
+                    case 8:
+                        operation = new StatOperation(opCode);
+                    case 12:
+                        operation = new BlockOperation(opCode);
+                }
+            }
         }
         else
         {
-            switch(opCode) {
-                case 1:
-
-
-                case 2:
-
-                case 3:
-
-                case 4:
-
-                case 5:
-
-                case 6:
-
-                case 7:
-
-                case 8:
-
-                case 12:
-            }
+            if(operation.pushByte(nextByte))
+                return operation;
         }
             return null;
     }
+
     private void pushByte(byte nextByte) {
         if (length >= bytes.length) {
             bytes = Arrays.copyOf(bytes, length * 2);
@@ -55,14 +64,9 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
         switch (opCode)
         {
             case 9:
-                short notificationType;
-                if(message.getMessageOpCode()==6)
-                    notificationType = 0;
-                else
-                    notificationType = 1;
-                byte notificationByte = (byte)notificationType;
-                byte[] bArrPostingUser = message.getUserName().getBytes();
-                byte[] bArrContent = message.getMessage().getBytes();
+                byte notificationByte = ((NotificationOperation)message).getNotificationType();
+                byte[] bArrPostingUser = ((NotificationOperation)message).getPostingUser().getBytes();
+                byte[] bArrContent = ((NotificationOperation)message).getContent().getBytes();
                 byte[] bArrNotification = new byte[5+bArrPostingUser.length+bArrContent.length];
                 bArrNotification[0] = bArrOpCode[0];
                 bArrNotification[1] = bArrOpCode[1];
@@ -76,8 +80,8 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
                 return bArrNotification;
 
             case 10:
-                bArrMessage = shortToBytes(message.getMessageOpCode());
-                byte[] bArrOptional = message.getMessage().getBytes();
+                bArrMessage = shortToBytes(((ACKOperation)message).getMessageOpCode());
+                byte[] bArrOptional = ((ACKOperation)message).getOptional().getBytes();
                 byte[] bArrACK = new byte[4+bArrOptional.length];
                 bArrACK[0] = bArrOpCode[0];
                 bArrACK[1] = bArrOpCode[1];
@@ -88,7 +92,7 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
                 return bArrACK;
 
             case 11:
-                bArrMessage = shortToBytes(message.getMessageOpCode());
+                bArrMessage = shortToBytes(((ErrorOperation)message).getMessageOpCode());
                 byte[] bArrErr = new byte[4];
                 bArrErr[0] = bArrOpCode[0];
                 bArrErr[1] = bArrOpCode[1];

@@ -1,5 +1,7 @@
 package bgu.spl.net.api.bidi;
 
+import bgu.spl.net.api.bidi.Operations.ServerOperations.NotificationOperation;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -16,15 +18,19 @@ public class UserController {
     private final ConcurrentHashMap<String, List<String>> followingBy;
     private final ConcurrentHashMap<String, List<String>> blockedBy;
     private final ConcurrentHashMap<String, List<List<Message>>> messages; // 0 for posts, 1 for privates
+    private final ConcurrentHashMap<String, List<Message>> pendingMessages;
     private final List<String> filter;
+    private final Connections<Operation> connections;
 
-    public UserController() {
+    public UserController(Connections<Operation> connections) {
         this.users = new ConcurrentHashMap<>();
         this.followersOf = new ConcurrentHashMap<>();
         this.followingBy = new ConcurrentHashMap<>();
         this.blockedBy = new ConcurrentHashMap<>();
         this.messages = new ConcurrentHashMap<>();
+        this.pendingMessages = new ConcurrentHashMap<>();
         this.filter = new ArrayList<>();
+        this.connections = connections;
     }
 
     public boolean regiser(String userName, String password, String birthday) {
@@ -43,13 +49,29 @@ public class UserController {
         return true;
     }
 
-    public boolean login(String userName, String password) {
+    public boolean login(String userName, String password, int connectionId) {
         if (!users.containsKey(userName))
             return false;
         User user = users.get(userName);
         if (!user.validatePassword(password))
             return false;
-        return user.login();
+        if(user.login(connectionId))
+        {
+            for(Message message: messages.get(userName).get(0))
+                if(!((PostMessage)message).isReceived())
+                {
+                    connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)1,((PostMessage)message).getSender(),((PostMessage)message).getMessage()));
+                    ((PostMessage)message).messageReceived();
+                }
+            for(Message message: messages.get(userName).get(1))
+                if(!((PrivateMessage)message).isReceived())
+                {
+                    connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)1,((PrivateMessage)message).getSender().getUserName(),((PrivateMessage)message).getMessage()));
+                    ((PrivateMessage)message).messageReceived();
+                }
+            return true;
+        }
+        return false;
     }
 
     public boolean logout(String userName) {
@@ -58,7 +80,14 @@ public class UserController {
         return users.get(userName).logout();
     }
 
-    public boolean follow(String userFollowing, String userFollowed) {
+    public boolean followOrUnfollow(int folOrUnfol, String userFollowing, String userFollowed){
+        if(folOrUnfol == 0)
+            return follow(userFollowing, userFollowed);
+        else
+            return unFollow(userFollowing, userFollowed);
+    }
+
+    private boolean follow(String userFollowing, String userFollowed) {
         if (!users.containsKey(userFollowing) || !users.containsKey(userFollowed))
             return false;
         else if (!users.get(userFollowing).isLoggedIn())
@@ -74,7 +103,7 @@ public class UserController {
         return true;
     }
 
-    public boolean unFollow(String userFollowing, String userFollowed) {
+    private boolean unFollow(String userFollowing, String userFollowed) {
         if (!users.containsKey(userFollowing) || !users.containsKey(userFollowed))
             return false;
         else if (!users.get(userFollowing).isLoggedIn())
@@ -123,12 +152,15 @@ public class UserController {
             if (users.containsKey(userMentioned))
                 usersRecipients.add(userMentioned);
         }
-        usersRecipients.addAll(followersOf.get(userName)); //cool method they suggeested
+        for (String follower : followersOf.get(userName)) {
+            if (!usersRecipients.contains(follower))
+                usersRecipients.add(follower);
+        }
         messages.get(userName).get(0).add(new PostMessage(usersRecipients, message, userName));
         return true;
     }
 
-    public boolean privateMessage(String userName, String userRecipient, String message, String date) {
+    public boolean sendPrivateMessage(String userName, String userRecipient, String message, String date) {
         if (!users.containsKey(userName) || !users.containsKey(userRecipient))
             return false;
         else if (!followingBy.containsKey(userName) || !messages.containsKey(userName))
@@ -138,7 +170,13 @@ public class UserController {
         for (String filter : filter) {
             message = message.replaceAll(filter, "<filtered>");
         }
-        messages.get(userName).get(1).add(new PrivateMessage(message, users.get(userName), users.get(userRecipient), date));
+        PrivateMessage pm = new PrivateMessage(message, users.get(userName), users.get(userRecipient), date);
+        messages.get(userName).get(1).add(pm);
+        if(users.get(userRecipient).isLoggedIn())
+        {
+            connections.send(users.get(userRecipient).getConnectionId(), new NotificationOperation((short)9,(byte)0,pm.getSender().getUserName(),pm.getMessage()));
+            pm.messageReceived();
+        }
         return true;
     }
 
