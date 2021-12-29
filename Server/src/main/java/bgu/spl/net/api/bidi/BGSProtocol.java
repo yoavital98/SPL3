@@ -1,13 +1,13 @@
 package bgu.spl.net.api.bidi;
 
-    public class BGSProtocol implements BidiMessagingProtocol<String>{
+    public class BGSProtocol implements BidiMessagingProtocol<OperationServer>{
         @Override
-        public void start(int connectionId, Connections<String> connections) {
+        public void start(int connectionId, Connections<OperationServer> connections) {
 
         }
 
         @Override
-        public void process(String message) {
+        public void process(OperationServer message) {
 
         }
 

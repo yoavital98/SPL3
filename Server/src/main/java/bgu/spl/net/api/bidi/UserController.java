@@ -65,7 +65,7 @@ public class UserController {
             return false;
         else if (!followingBy.containsKey(userFollowing) || !followersOf.containsKey(userFollowed))
             return false;
-        else if (followingBy.get(userFollowing).contains(users.get(userFollowed)) || followersOf.get(userFollowed).contains(users.get(userFollowing)))
+        else if (followingBy.get(userFollowing).contains(userFollowed) || followersOf.get(userFollowed).contains(userFollowing))
             return false;
         else if (blockedBy.get(userFollowing).contains(userFollowed))
             return false;
@@ -81,10 +81,10 @@ public class UserController {
             return false;
         else if (!followingBy.containsKey(userFollowing) || !followersOf.containsKey(userFollowed))
             return false;
-        else if (!followingBy.get(userFollowing).contains(users.get(userFollowed)) || !followersOf.get(userFollowed).contains(users.get(userFollowing)))
+        else if (!followingBy.get(userFollowing).contains(userFollowed) || !followersOf.get(userFollowed).contains(userFollowing))
             return false;
-        followingBy.get(userFollowing).remove(users.get(userFollowed));
-        followersOf.get(userFollowed).remove(users.get(userFollowing));
+        followingBy.get(userFollowing).remove(userFollowed);
+        followersOf.get(userFollowed).remove(userFollowing);
         return true;
     }
 
@@ -98,7 +98,7 @@ public class UserController {
         int index;
         Character[] delimiter = {' ', '.', ';', ',', ':', '@'};
         List<Character> delimiters = new ArrayList<Character>(Arrays.asList(delimiter));
-        while (messageCopy != null && messageCopy.indexOf("@") != -1) {
+        while (messageCopy != null && messageCopy.contains("@")) {
             index = messageCopy.indexOf("@");
             messageCopy = messageCopy.substring(index + 1, messageCopy.length());
             int endIndex = -1;
@@ -133,7 +133,7 @@ public class UserController {
             return false;
         else if (!followingBy.containsKey(userName) || !messages.containsKey(userName))
             return false;
-        else if (!followingBy.get(userName).contains(users.get(userRecipient)))
+        else if (!followingBy.get(userName).contains(userRecipient))
             return false;
         for (String filter : filter) {
             message = message.replaceAll(filter, "<filtered>");
@@ -197,14 +197,14 @@ public class UserController {
             return false;
         if (!blockedBy.get(userName).contains(blockedUserName)) { //if not already blocked
             blockedBy.get(userName).add(blockedUserName);
-            if (followersOf.get(userName).contains(blockedUserName))
+            /*if (followersOf.get(userName).contains(blockedUserName))
                 followersOf.get(userName).remove(blockedUserName);
             if (followersOf.get(blockedUserName).contains(userName))
                 followersOf.get(blockedUserName).remove(userName);
             if (followingBy.get(userName).contains(blockedUserName))
                 followingBy.get(userName).remove(blockedUserName);
             if (followingBy.get(blockedUserName).contains(userName))
-                followingBy.get(blockedUserName).remove(userName);
+                followingBy.get(blockedUserName).remove(userName);*/
             return true;
         }
         return false;
