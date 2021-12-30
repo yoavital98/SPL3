@@ -128,29 +128,77 @@ Client/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/build
 .PHONY : Client/fast
 
-main.obj: main.cpp.obj
-.PHONY : main.obj
+src/client.obj: src/client.cpp.obj
+.PHONY : src/client.obj
 
 # target to build an object file
-main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/main.cpp.obj
-.PHONY : main.cpp.obj
+src/client.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/client.cpp.obj
+.PHONY : src/client.cpp.obj
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/client.i: src/client.cpp.i
+.PHONY : src/client.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/client.cpp.i
+.PHONY : src/client.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/client.s: src/client.cpp.s
+.PHONY : src/client.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/client.cpp.s
+.PHONY : src/client.cpp.s
+
+src/connectionHandler.obj: src/connectionHandler.cpp.obj
+.PHONY : src/connectionHandler.obj
+
+# target to build an object file
+src/connectionHandler.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/connectionHandler.cpp.obj
+.PHONY : src/connectionHandler.cpp.obj
+
+src/connectionHandler.i: src/connectionHandler.cpp.i
+.PHONY : src/connectionHandler.i
+
+# target to preprocess a source file
+src/connectionHandler.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/connectionHandler.cpp.i
+.PHONY : src/connectionHandler.cpp.i
+
+src/connectionHandler.s: src/connectionHandler.cpp.s
+.PHONY : src/connectionHandler.s
+
+# target to generate assembly for a file
+src/connectionHandler.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/connectionHandler.cpp.s
+.PHONY : src/connectionHandler.cpp.s
+
+src/encoderDecoder.obj: src/encoderDecoder.cpp.obj
+.PHONY : src/encoderDecoder.obj
+
+# target to build an object file
+src/encoderDecoder.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj
+.PHONY : src/encoderDecoder.cpp.obj
+
+src/encoderDecoder.i: src/encoderDecoder.cpp.i
+.PHONY : src/encoderDecoder.i
+
+# target to preprocess a source file
+src/encoderDecoder.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/encoderDecoder.cpp.i
+.PHONY : src/encoderDecoder.cpp.i
+
+src/encoderDecoder.s: src/encoderDecoder.cpp.s
+.PHONY : src/encoderDecoder.s
+
+# target to generate assembly for a file
+src/encoderDecoder.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/encoderDecoder.cpp.s
+.PHONY : src/encoderDecoder.cpp.s
 
 # Help Target
 help:
@@ -161,9 +209,15 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... Client
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
+	@echo ... src/client.obj
+	@echo ... src/client.i
+	@echo ... src/client.s
+	@echo ... src/connectionHandler.obj
+	@echo ... src/connectionHandler.i
+	@echo ... src/connectionHandler.s
+	@echo ... src/encoderDecoder.obj
+	@echo ... src/encoderDecoder.i
+	@echo ... src/encoderDecoder.s
 .PHONY : help
 
 

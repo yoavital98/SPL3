@@ -8,12 +8,15 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "C:/Users/User/Desktop/SPL_HW3/Client/main.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/main.cpp.obj"
+  "C:/Users/User/Desktop/SPL_HW3/Client/src/client.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/client.cpp.obj"
+  "C:/Users/User/Desktop/SPL_HW3/Client/src/connectionHandler.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/connectionHandler.cpp.obj"
+  "C:/Users/User/Desktop/SPL_HW3/Client/src/encoderDecoder.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "../include"
   )
 
 # The set of dependency files which are needed:
