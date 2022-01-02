@@ -11,12 +11,24 @@ void Server2Client(ConnectionHandler& connectionHandler, EncoderDecoder& encoder
 {
     while(run)
     {
-        int len;
         std::string answer;
-        if(encoderDecoder.Decode(answer))
+        std::string messageToDecode;
+        std::vector<char> charVector;
+        char ch;
+        try {
+            do{
+                connectionHandler.getBytes(&ch, 1);
+                charVector.push_back(ch);
+            }while (';' != ch);
+        } catch (std::exception& e) {
+            std::cerr << "Lost Connection With The Server. Disconnecting..." << std::endl;
+            run = false;
+            break;
+        }
+        if(encoderDecoder.Decode(answer, charVector))
         {
             std::cout << answer << std::endl;
-            if(answer=="Successfully logged out")
+            if(answer=="Logged out Successfully")
                 run = false;
         }
         else
@@ -49,7 +61,11 @@ void Client2Server(ConnectionHandler& connectionHandler,EncoderDecoder& encoderD
 }
 
 int main (int argc, char *argv[]) {
-    if (argc < 3) {
+    std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::string s(18, '\0');
+    std::strftime(&s[0], s.size(), "%d-%m-%Y %H:%M", std::localtime(&now));
+    std::cout << s << std::endl;
+    /*if (argc < 3) {
         std::cerr << "Usage: " << argv[0] << " host port" << std::endl << std::endl;
         return -1;
     }
@@ -67,5 +83,5 @@ int main (int argc, char *argv[]) {
     std::thread client2ServerThread(&Client2Server, std::ref(connectionHandler),std::ref(encoderDecoder), std::ref(terminate_Client));
     server2ClientThread.join();
     client2ServerThread.join();
-    return 0;
+    return 0;*/
 }
