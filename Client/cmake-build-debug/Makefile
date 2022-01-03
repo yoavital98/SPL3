@@ -128,29 +128,29 @@ Client/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/build
 .PHONY : Client/fast
 
-src/client.obj: src/client.cpp.obj
-.PHONY : src/client.obj
+src/BGSclient.obj: src/BGSclient.cpp.obj
+.PHONY : src/BGSclient.obj
 
 # target to build an object file
-src/client.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/client.cpp.obj
-.PHONY : src/client.cpp.obj
+src/BGSclient.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/BGSclient.cpp.obj
+.PHONY : src/BGSclient.cpp.obj
 
-src/client.i: src/client.cpp.i
-.PHONY : src/client.i
+src/BGSclient.i: src/BGSclient.cpp.i
+.PHONY : src/BGSclient.i
 
 # target to preprocess a source file
-src/client.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/client.cpp.i
-.PHONY : src/client.cpp.i
+src/BGSclient.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/BGSclient.cpp.i
+.PHONY : src/BGSclient.cpp.i
 
-src/client.s: src/client.cpp.s
-.PHONY : src/client.s
+src/BGSclient.s: src/BGSclient.cpp.s
+.PHONY : src/BGSclient.s
 
 # target to generate assembly for a file
-src/client.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/client.cpp.s
-.PHONY : src/client.cpp.s
+src/BGSclient.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client.dir\build.make CMakeFiles/Client.dir/src/BGSclient.cpp.s
+.PHONY : src/BGSclient.cpp.s
 
 src/connectionHandler.obj: src/connectionHandler.cpp.obj
 .PHONY : src/connectionHandler.obj
@@ -209,9 +209,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... Client
-	@echo ... src/client.obj
-	@echo ... src/client.i
-	@echo ... src/client.s
+	@echo ... src/BGSclient.obj
+	@echo ... src/BGSclient.i
+	@echo ... src/BGSclient.s
 	@echo ... src/connectionHandler.obj
 	@echo ... src/connectionHandler.i
 	@echo ... src/connectionHandler.s

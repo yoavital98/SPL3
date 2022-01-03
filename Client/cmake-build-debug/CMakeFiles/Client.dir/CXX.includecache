@@ -30,7 +30,7 @@ ctime
 iomanip
 -
 
-C:/Users/User/Desktop/SPL_HW3/Client/src/client.cpp
+C:/Users/User/Desktop/SPL_HW3/Client/src/BGSclient.cpp
 stdlib.h
 -
 connectionHandler.h
@@ -40,6 +40,12 @@ encoderDecoder.h
 thread
 -
 atomic
+-
+
+C:/Users/User/Desktop/SPL_HW3/Client/src/encoderDecoder.cpp
+encoderDecoder.h
+-
+time.h
 -
 
 C:/boost/include/boost-1_66/boost/array.hpp

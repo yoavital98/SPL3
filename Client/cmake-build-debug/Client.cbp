@@ -86,7 +86,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Users/User/Desktop/SPL_HW3/Client/src/client.cpp">
+		<Unit filename="C:/Users/User/Desktop/SPL_HW3/Client/src/BGSclient.cpp">
 			<Option target="Client"/>
 		</Unit>
 		<Unit filename="C:/Users/User/Desktop/SPL_HW3/Client/src/connectionHandler.cpp">

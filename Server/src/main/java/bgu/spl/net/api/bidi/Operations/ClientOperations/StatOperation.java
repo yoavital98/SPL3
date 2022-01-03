@@ -17,7 +17,7 @@ public class StatOperation extends OperationClient {
         if(nextByte ==';')
             return true;
         if(nextByte =='|' || nextByte== (byte)0)
-        userNamesList.add(bytesToString());
+            userNamesList.add(bytesToString());
         else
             pushNextByte(nextByte);
         return false;

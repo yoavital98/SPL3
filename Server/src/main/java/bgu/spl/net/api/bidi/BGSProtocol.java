@@ -2,29 +2,23 @@ package bgu.spl.net.api.bidi;
 import bgu.spl.net.api.bidi.Operations.ClientOperations.*;
 import bgu.spl.net.api.bidi.Operations.ServerOperations.ACKOperation;
 import bgu.spl.net.api.bidi.Operations.ServerOperations.ErrorOperation;
-import bgu.spl.net.srv.bidi.ConnectionHandler;
-import jdk.internal.foreign.AbstractCLinker;
-
-import java.sql.Connection;
+import java.util.List;
 
 public class BGSProtocol implements BidiMessagingProtocol<Operation>{
-    private UserController userController;
-    private String userName;
-    private ConnectionHandler<Operation> connection;
+    private final UserController userController;
+    private final String userName;
     private int connectionId;
+    private Connections<Operation> connections;
+
     public BGSProtocol(UserController userController) {
         this.userController = userController;
         this.userName = "";
-    }
-    public void initiateConnection(ConnectionHandler<Operation> connection)
-    {
-        System.out.println("New Client Connected");
-        this.connection = connection;
     }
 
     @Override
     public void start(int connectionId, Connections<Operation> connections) {
         this.connectionId = connectionId;
+        this.connections = connections;
     }
 
     @Override
@@ -32,39 +26,53 @@ public class BGSProtocol implements BidiMessagingProtocol<Operation>{
         switch(operation.getOpCode()) {
             case 1:
                 if (userController.regiser(((RegisterOperation) operation).getUserName(), ((RegisterOperation) operation).getPassword(), ((RegisterOperation) operation).getBirthday()))
-                    connection.send(new ACKOperation((short) 10, (short) 1, "Registered Successfully"));
+                    connections.send(connectionId, new ACKOperation((short) 10, (short) 1, "Registered Successfully"));
                 else
-                    connection.send(new ErrorOperation((short) 11, (short) 1));
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 1));
             case 2:
                 if (userController.login(((LoginOperation) operation).getUserName(), ((LoginOperation) operation).getPassword(), connectionId))
-                    connection.send(new ACKOperation((short) 10, (short) 2, "Logged in Successfully"));
+                    connections.send(connectionId, new ACKOperation((short) 10, (short) 2, "Logged in Successfully"));
                 else
-                    connection.send(new ErrorOperation((short) 11, (short) 2));
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 2));
             case 3:
                 if (userController.logout(userName))
-                    connection.send(new ACKOperation((short) 10, (short) 3, "Logged out Successfully"));
+                    connections.send(connectionId, new ACKOperation((short) 10, (short) 3, "Logged out Successfully"));
                 else
-                    connection.send(new ErrorOperation((short) 11, (short) 3));
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 3));
             case 4:
                 if (userController.followOrUnfollow(((FollowOperation) operation).getFollowOrUnfollow(), userName, ((FollowOperation) operation).getUserName())) {
                     if (((FollowOperation) operation).getFollowOrUnfollow() == 0)
-                        connection.send(new ACKOperation((short) 10, (short) 4, ("Followed " + ((FollowOperation) operation).getUserName() + " Successfully")));
+                        connections.send(connectionId, new ACKOperation((short) 10, (short) 4, ("Followed " + ((FollowOperation) operation).getUserName() + " Successfully")));
                     else
-                        connection.send(new ACKOperation((short) 10, (short) 4, ("Unfollowed " + ((FollowOperation) operation).getUserName() + " Successfully")));
+                        connections.send(connectionId, new ACKOperation((short) 10, (short) 4, ("Unfollowed " + ((FollowOperation) operation).getUserName() + " Successfully")));
                 } else
-                    connection.send(new ErrorOperation((short) 11, (short) 4));
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 4));
             case 5:
                 if(userController.postMessage(userName, (((PostMessageOperation)operation).getContent())))
-                    connection.send(new ACKOperation((short) 10, (short) 5, "Message has been posted Successfully"));
+                    connections.send(connectionId, new ACKOperation((short) 10, (short) 5, "Message has been posted Successfully"));
                 else
-                    connection.send(new ErrorOperation((short) 11, (short) 5));
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 5));
             case 6:
                 if(userController.sendPrivateMessage(userName, (((PrivateMessageOperation)operation).getUserName()), (((PrivateMessageOperation)operation).getContent()), (((PrivateMessageOperation)operation).getDateAndTime())))
-                    connection.send(new ACKOperation((short) 10, (short) 5, "Message has been posted Successfully"));
+                    connections.send(connectionId, new ACKOperation((short) 10, (short) 6, "Message has been posted Successfully"));
                 else
-                    connection.send(new ErrorOperation((short) 11, (short) 5));
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 6));
             case 7:
+                List<String> logStatus = userController.logstat(userName);
+                if(logStatus!=null){
+                    for(String str : logStatus)
+                        connections.send(connectionId, new ACKOperation((short) 10, (short) 7, str));
+                }
+                else
+                    connections.send(connectionId, new ErrorOperation((short)11, (short)7));
             case 8:
+                List<String> specificUsersStatus = userController.stat(userName, (((StatOperation)operation).getUserNamesList()));
+                if(specificUsersStatus != null){
+                    for(String str : specificUsersStatus)
+                        connections.send(connectionId, new ACKOperation((short) 10, (short) 8, str));
+                }
+                else
+                    connections.send(connectionId, new ErrorOperation((short)11, (short)8));
             case 12:
         }
     }

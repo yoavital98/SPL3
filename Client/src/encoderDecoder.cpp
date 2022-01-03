@@ -132,7 +132,7 @@ bool EncoderDecoder::Decode(std::string& line, std::vector<char> messageToDecode
                 op[0] = messageToDecode.at(2);
                 op[1] = messageToDecode.at(3);
                 messageOpCode = bytesToShort(op);
-                line = "ERROR "+messageOpCode;
+                line = "ERROR "+ std::to_string(messageOpCode);
                 delete[](op);
                 return true;
             }

@@ -65,10 +65,24 @@ include CMakeFiles/Client.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Client.dir/flags.make
 
+CMakeFiles/Client.dir/src/BGSclient.cpp.obj: CMakeFiles/Client.dir/flags.make
+CMakeFiles/Client.dir/src/BGSclient.cpp.obj: CMakeFiles/Client.dir/includes_CXX.rsp
+CMakeFiles/Client.dir/src/BGSclient.cpp.obj: ../src/BGSclient.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\User\Desktop\SPL_HW3\Client\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Client.dir/src/BGSclient.cpp.obj"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Client.dir\src\BGSclient.cpp.obj -c C:\Users\User\Desktop\SPL_HW3\Client\src\BGSclient.cpp
+
+CMakeFiles/Client.dir/src/BGSclient.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/src/BGSclient.cpp.i"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\User\Desktop\SPL_HW3\Client\src\BGSclient.cpp > CMakeFiles\Client.dir\src\BGSclient.cpp.i
+
+CMakeFiles/Client.dir/src/BGSclient.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/src/BGSclient.cpp.s"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\User\Desktop\SPL_HW3\Client\src\BGSclient.cpp -o CMakeFiles\Client.dir\src\BGSclient.cpp.s
+
 CMakeFiles/Client.dir/src/connectionHandler.cpp.obj: CMakeFiles/Client.dir/flags.make
 CMakeFiles/Client.dir/src/connectionHandler.cpp.obj: CMakeFiles/Client.dir/includes_CXX.rsp
 CMakeFiles/Client.dir/src/connectionHandler.cpp.obj: ../src/connectionHandler.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\User\Desktop\SPL_HW3\Client\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Client.dir/src/connectionHandler.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\User\Desktop\SPL_HW3\Client\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Client.dir/src/connectionHandler.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Client.dir\src\connectionHandler.cpp.obj -c C:\Users\User\Desktop\SPL_HW3\Client\src\connectionHandler.cpp
 
 CMakeFiles/Client.dir/src/connectionHandler.cpp.i: cmake_force
@@ -78,20 +92,6 @@ CMakeFiles/Client.dir/src/connectionHandler.cpp.i: cmake_force
 CMakeFiles/Client.dir/src/connectionHandler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/src/connectionHandler.cpp.s"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\User\Desktop\SPL_HW3\Client\src\connectionHandler.cpp -o CMakeFiles\Client.dir\src\connectionHandler.cpp.s
-
-CMakeFiles/Client.dir/src/client.cpp.obj: CMakeFiles/Client.dir/flags.make
-CMakeFiles/Client.dir/src/client.cpp.obj: CMakeFiles/Client.dir/includes_CXX.rsp
-CMakeFiles/Client.dir/src/client.cpp.obj: ../src/client.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\User\Desktop\SPL_HW3\Client\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Client.dir/src/client.cpp.obj"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Client.dir\src\client.cpp.obj -c C:\Users\User\Desktop\SPL_HW3\Client\src\client.cpp
-
-CMakeFiles/Client.dir/src/client.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Client.dir/src/client.cpp.i"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\User\Desktop\SPL_HW3\Client\src\client.cpp > CMakeFiles\Client.dir\src\client.cpp.i
-
-CMakeFiles/Client.dir/src/client.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Client.dir/src/client.cpp.s"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\User\Desktop\SPL_HW3\Client\src\client.cpp -o CMakeFiles\Client.dir\src\client.cpp.s
 
 CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj: CMakeFiles/Client.dir/flags.make
 CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj: CMakeFiles/Client.dir/includes_CXX.rsp
@@ -109,15 +109,15 @@ CMakeFiles/Client.dir/src/encoderDecoder.cpp.s: cmake_force
 
 # Object files for target Client
 Client_OBJECTS = \
+"CMakeFiles/Client.dir/src/BGSclient.cpp.obj" \
 "CMakeFiles/Client.dir/src/connectionHandler.cpp.obj" \
-"CMakeFiles/Client.dir/src/client.cpp.obj" \
 "CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj"
 
 # External object files for target Client
 Client_EXTERNAL_OBJECTS =
 
+Client.exe: CMakeFiles/Client.dir/src/BGSclient.cpp.obj
 Client.exe: CMakeFiles/Client.dir/src/connectionHandler.cpp.obj
-Client.exe: CMakeFiles/Client.dir/src/client.cpp.obj
 Client.exe: CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj
 Client.exe: CMakeFiles/Client.dir/build.make
 Client.exe: CMakeFiles/Client.dir/linklibs.rsp

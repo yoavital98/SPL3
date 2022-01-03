@@ -1,5 +1,4 @@
 package bgu.spl.net.api.bidi;
-import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.Operations.ClientOperations.*;
 import bgu.spl.net.api.bidi.Operations.ServerOperations.ACKOperation;
 import bgu.spl.net.api.bidi.Operations.ServerOperations.ErrorOperation;
@@ -67,7 +66,7 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
                 byte notificationByte = ((NotificationOperation)message).getNotificationType();
                 byte[] bArrPostingUser = ((NotificationOperation)message).getPostingUser().getBytes();
                 byte[] bArrContent = ((NotificationOperation)message).getContent().getBytes();
-                byte[] bArrNotification = new byte[5+bArrPostingUser.length+bArrContent.length];
+                byte[] bArrNotification = new byte[6+bArrPostingUser.length+bArrContent.length];
                 bArrNotification[0] = bArrOpCode[0];
                 bArrNotification[1] = bArrOpCode[1];
                 bArrNotification[2] = notificationByte;
@@ -76,28 +75,31 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
                 bArrNotification[3+bArrPostingUser.length] = (byte)0;
                 for(int i=0;i<bArrContent.length;i++)
                     bArrNotification[i+4+bArrPostingUser.length] = bArrContent[i];
-                bArrNotification[bArrNotification.length-1] = (byte)0;
+                bArrNotification[bArrNotification.length-2] = (byte)0;
+                bArrNotification[bArrNotification.length-1] = ';';
                 return bArrNotification;
 
             case 10:
                 bArrMessage = shortToBytes(((ACKOperation)message).getMessageOpCode());
                 byte[] bArrOptional = ((ACKOperation)message).getOptional().getBytes();
-                byte[] bArrACK = new byte[4+bArrOptional.length];
+                byte[] bArrACK = new byte[5+bArrOptional.length];
                 bArrACK[0] = bArrOpCode[0];
                 bArrACK[1] = bArrOpCode[1];
                 bArrACK[2] = bArrMessage[0];
                 bArrACK[3] = bArrMessage[1];
                 for(int i=0;i<bArrACK.length;i++)
                     bArrACK[i+4] = bArrOptional[i];
+                bArrACK[bArrACK.length-1] = ';';
                 return bArrACK;
 
             case 11:
                 bArrMessage = shortToBytes(((ErrorOperation)message).getMessageOpCode());
-                byte[] bArrErr = new byte[4];
+                byte[] bArrErr = new byte[5];
                 bArrErr[0] = bArrOpCode[0];
                 bArrErr[1] = bArrOpCode[1];
                 bArrErr[2] = bArrMessage[0];
                 bArrErr[3] = bArrMessage[1];
+                bArrErr[4] = ';';
                 return bArrErr;
         }
         return null;

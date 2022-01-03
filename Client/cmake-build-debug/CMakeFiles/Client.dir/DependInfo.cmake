@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "C:/Users/User/Desktop/SPL_HW3/Client/src/client.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/client.cpp.obj"
+  "C:/Users/User/Desktop/SPL_HW3/Client/src/BGSclient.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/BGSclient.cpp.obj"
   "C:/Users/User/Desktop/SPL_HW3/Client/src/connectionHandler.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/connectionHandler.cpp.obj"
   "C:/Users/User/Desktop/SPL_HW3/Client/src/encoderDecoder.cpp" "C:/Users/User/Desktop/SPL_HW3/Client/cmake-build-debug/CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj"
   )

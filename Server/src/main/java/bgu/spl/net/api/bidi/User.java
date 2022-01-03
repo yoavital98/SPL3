@@ -1,7 +1,5 @@
 package bgu.spl.net.api.bidi;
 
-import jdk.vm.ci.meta.Local;
-
 import java.time.LocalDate;
 
 public class User {

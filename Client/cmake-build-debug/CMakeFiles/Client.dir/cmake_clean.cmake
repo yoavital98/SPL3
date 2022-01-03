@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Client.dir/src/client.cpp.obj"
+  "CMakeFiles/Client.dir/src/BGSclient.cpp.obj"
   "CMakeFiles/Client.dir/src/connectionHandler.cpp.obj"
   "CMakeFiles/Client.dir/src/encoderDecoder.cpp.obj"
   "Client.exe"

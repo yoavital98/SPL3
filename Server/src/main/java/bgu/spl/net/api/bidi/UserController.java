@@ -180,54 +180,53 @@ public class UserController {
         return true;
     }
 
-    public List<Short[]> log(String userRequested) {
+    public List<String> logstat(String userRequested) {
         if (!users.containsKey(userRequested))
             return null;
         if (!users.get(userRequested).isLoggedIn())
             return null;
-        List<Short[]> log = new ArrayList<>();
+        List<String> log = new ArrayList<>();
         for (User user : users.values()) {
-            if (user.isLoggedIn()) {
+            if (user.isLoggedIn() && !blockedBy(userRequested, user.getUserName())) {
                 log.add(getData(user));
             }
         }
         return log;
     }
 
-    public List<Short[]> stat(String userRequested, List<String> usersList) {
+    private boolean blockedBy(String userRequested, String userBlocking) {
+        return blockedBy.get(userBlocking).contains(userRequested);
+    }
+
+    public List<String> stat(String userRequested, List<String> usersList) {
         if (!users.containsKey(userRequested))
             return null;
         if (!users.get(userRequested).isLoggedIn())
             return null;
-        List<Short[]> log = new ArrayList<>();
+        List<String> log = new ArrayList<>();
         for (String userName : usersList) {
             if (!users.containsKey(userName))
                 return null;
-            User user = users.get(userName);
-            log.add(getData(user));
+            if(!blockedBy(userRequested, userName)) {
+                User user = users.get(userName);
+                log.add(getData(user));
+            }
         }
         return log;
     }
 
-    private Short[] getData(User user) {
+    private String getData(User user) {
         LocalDate birthday;
-        short age;
-        short numberOfPosts;
-        short numberOfFollowing;
-        short numberOfFollowers;
+        int age;
+        int numberOfPosts;
+        int numberOfFollowing;
+        int numberOfFollowers;
         birthday = user.getBirthday();
-        age = (short) Period.between(birthday, LocalDate.now()).getYears();
-        numberOfPosts = (short) messages.get(user.getUserName()).get(0).size();
-        numberOfFollowing = (short) followingBy.get(user.getUserName()).size();
-        numberOfFollowers = (short) followersOf.get(user.getUserName()).size();
-        Short[] logStat = new Short[6];
-        logStat[0] = 10;
-        logStat[1] = 7;
-        logStat[2] = age;
-        logStat[3] = numberOfPosts;
-        logStat[4] = numberOfFollowing;
-        logStat[5] = numberOfFollowers;
-        return logStat;
+        age = Period.between(birthday, LocalDate.now()).getYears();
+        numberOfPosts = messages.get(user.getUserName()).get(0).size();
+        numberOfFollowing = followingBy.get(user.getUserName()).size();
+        numberOfFollowers = followersOf.get(user.getUserName()).size();
+        return age+" "+numberOfPosts+" "+numberOfFollowing +" "+numberOfFollowers;
     }
 
     public boolean block(String userName, String blockedUserName) {
