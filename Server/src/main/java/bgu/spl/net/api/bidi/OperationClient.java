@@ -1,5 +1,6 @@
 package bgu.spl.net.api.bidi;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public abstract class OperationClient implements Operation {
@@ -28,8 +29,9 @@ public abstract class OperationClient implements Operation {
     }
     public abstract boolean pushByte(byte nextByte);
     public String bytesToString(){
-        String output = new String(bArr);
+        String output = new String(bArr, 0 , length, StandardCharsets.UTF_8);
         bArr = new byte[size];
+        length = 0;
         return output;
     }
 }

@@ -34,6 +34,7 @@ opCodeEnum enumTranslator (std::string const& str) {
 
 bool EncoderDecoder::Encode(std::string line, char bytes[], int& length) {
     std::string firstWord;
+    std::string word;
     if (line.find(' ') != std::string::npos) {
         firstWord = line.substr(0, line.find(' ', 0));
         line = line.substr(firstWord.size() + 1);
@@ -56,10 +57,12 @@ bool EncoderDecoder::Encode(std::string line, char bytes[], int& length) {
             return blockEncode(line, bytes, length);
         case LOGSTAT:
             return logstatEncode(line,bytes,length);
+        case LOGOUT:
+            return logoutEncode(line,bytes,length);
         default:
-            while(std::getline(wordStream, firstWord, ' '))
+            while(std::getline(wordStream, word, ' '))
             {
-                wordList.push_back(firstWord);
+                wordList.push_back(word);
             }
     }
     switch (enumTranslator(firstWord)) {
@@ -69,8 +72,6 @@ bool EncoderDecoder::Encode(std::string line, char bytes[], int& length) {
             return registerEncode(wordList, bytes, length);
         case LOGIN:
             return loginEncode(wordList, bytes, length);
-        case LOGOUT:
-            return logoutEncode(wordList, bytes, length);
         case FOLLOW:
             return followEncode(wordList, bytes, length);
         default:
@@ -119,9 +120,9 @@ bool EncoderDecoder::Decode(std::string& line, std::vector<char> messageToDecode
                 messageOpCode = bytesToShort(messageOP);
                 delete[](messageOP);
                 char* contentBytes = new char[messageToDecode.size()-4];
-                for(int i = 4; i < messageToDecode.size(); i++)
+                for(int i = 4; i < messageToDecode.size()-1; i++)
                     contentBytes[i-4] = messageToDecode.at(i);
-                std::string content(contentBytes);
+                std::string content(contentBytes, 0, messageToDecode.size()-5);
                 delete[](contentBytes);
                 line = "ACK " + std::to_string(messageOpCode) +" "+ content;
                 return true;
@@ -175,7 +176,7 @@ bool validDate(std::basic_string<char> &date) {
     try {
         if (std::stoi(day) <= 0 || std::stoi(day) > 31)
             return false;
-        if (std::stoi(month) <= 0 || std::stoi(day) > 12)
+        if (std::stoi(month) <= 0 || std::stoi(month) > 12)
             return false;
         if (std::stoi(year) < 1900 || std::stoi(year) > 2022)
             return false;
@@ -189,31 +190,34 @@ bool validDate(std::basic_string<char> &date) {
 bool EncoderDecoder::registerEncode(std::vector<std::string> wordList, char bytes[], int& length){
     if(wordList.size() != 3)
         return false;
-    if(!validDate(wordList[3]))
+    if(!validDate(wordList[2]))
         return false;
     char opcodeByteArr[2];
     shortToBytes(1, opcodeByteArr);
     char zeroByte = '\0';
-    char const *userNameBytes = wordList[0].c_str();
-    char const *passwordBytes = wordList[1].c_str();
-    char const *birthDayBytes = wordList[2].c_str();
+    std::vector<char> userNameBytes(wordList[0].begin(), wordList[0].end());
+    std::vector<char> passwordBytes(wordList[1].begin(), wordList[1].end());
+    std::vector<char> birthDayBytes(wordList[2].begin(), wordList[2].end());
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
-    int updatedFreeSpot = 2;
-    for(int i=0; i<sizeof(*userNameBytes);i++)
-        bytes[i+updatedFreeSpot] = userNameBytes[i];
-    updatedFreeSpot += sizeof(*userNameBytes);
-    bytes[updatedFreeSpot] = zeroByte;
-    updatedFreeSpot++;
-    for(int i=0; i<sizeof(*passwordBytes);i++)
-        bytes[updatedFreeSpot+i] = passwordBytes[i];
-    updatedFreeSpot += sizeof(*passwordBytes);
-    bytes[updatedFreeSpot] = zeroByte;
-    updatedFreeSpot++;
-    for(int i=0; i<sizeof(*birthDayBytes);i++)
-        bytes[updatedFreeSpot+i] = birthDayBytes[i];
-    bytes[sizeof(*bytes)-2] = zeroByte;
-    bytes[sizeof(*bytes)-1] = ';';
+    length = 2;
+    for(int i=0; i<userNameBytes.size();i++)
+        bytes[i+length] = userNameBytes[i];
+    length += userNameBytes.size();
+    bytes[length] = zeroByte;
+    length++;
+    for(int i=0; i<passwordBytes.size();i++)
+        bytes[length+i] = passwordBytes[i];
+    length += passwordBytes.size();
+    bytes[length] = zeroByte;
+    length++;
+    for(int i=0; i<birthDayBytes.size();i++)
+        bytes[length+i] = birthDayBytes[i];
+    length += birthDayBytes.size();
+    bytes[length] = zeroByte;
+    length++;
+    bytes[length] = ';';
+    length++;
     return true;
 }
 
@@ -223,34 +227,37 @@ bool EncoderDecoder::loginEncode(std::vector<std::string> wordList, char bytes[]
     char opcodeByteArr[2];
     shortToBytes(2, opcodeByteArr);
     char zeroByte = '\0';
-    char const *userNameBytes = wordList[0].c_str();
-    char const *passwordBytes = wordList[1].c_str();
+    std::vector<char> userNameBytes(wordList[0].begin(), wordList[0].end());
+    std::vector<char> passwordBytes(wordList[1].begin(), wordList[1].end());
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
-    for(int i=0; i<sizeof(*userNameBytes);i++)
+    for(int i=0; i<wordList[0].size();i++)
         bytes[i+length] = userNameBytes[i];
-    length += sizeof(*userNameBytes);
+    length += wordList[0].size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<sizeof(*passwordBytes);i++)
+    for(int i=0; i<wordList[1].size();i++)
         bytes[length+i] = passwordBytes[i];
-    length += sizeof(*passwordBytes);
+    length += wordList[1].size();
     bytes[length] = zeroByte;
     length++;
     bytes[length] = '1';
     length++;
     bytes[length] = ';';
+    length++;
     return true;
 }
 
-bool EncoderDecoder::logoutEncode(std::vector<std::string> wordList, char bytes[], int& length){
-    if(wordList.size() != 0)
+bool EncoderDecoder::logoutEncode(std::string line, char bytes[], int& length){
+    if(line != "LOGOUT")
         return false;
     char opcodeByteArr[2];
     shortToBytes(3, opcodeByteArr);
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
+    bytes[2] = ';';
+    length=3;
     return true;
 }
 
@@ -267,15 +274,15 @@ bool EncoderDecoder::followEncode(std::vector<std::string> wordList, char bytes[
     else
         return false;
     char zeroByte = '\0';
-    char const *userNameBytes = wordList[1].c_str();
+    std::vector<char> userNameBytes(wordList[0].begin(), wordList[0].end());
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     bytes[2] = followByteArr[0];
     bytes[3] = followByteArr[1];
     length = 4;
-    for(int i=0; i<sizeof(*userNameBytes);i++)
+    for(int i=0; i<userNameBytes.size();i++)
         bytes[i+length] = userNameBytes[i];
-    length += sizeof(*userNameBytes);
+    length += userNameBytes.size();
     bytes[length] = zeroByte;
     length++;
     bytes[length] = ';';
@@ -291,10 +298,10 @@ bool EncoderDecoder::postEncode(std::string content, char bytes[], int& length){
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
-    char const *contentBytes = content.c_str();
-    for(int i=0; i<sizeof(*contentBytes);i++)
+    std::vector<char> contentBytes(content.begin(), content.end());
+    for(int i=0; i<contentBytes.size();i++)
         bytes[i+length] = contentBytes[i];
-    length += sizeof(*contentBytes);
+    length += contentBytes.size();
     bytes[length] = zeroByte;
     length++;
     bytes[length] = ';';
@@ -313,27 +320,28 @@ bool EncoderDecoder::pmEncode(std::string userName, std::string content, char by
     bytes[1] = opcodeByteArr[1];
     length = 2;
     char zeroByte = '\0';
-    char const *userNameBytes = userName.c_str();
-    char const *contentBytes = content.c_str();
-    char const *sendDateBytes = sendDate.c_str();
-    for(int i=0; i<sizeof(*userNameBytes);i++)
+    std::vector<char> userNameBytes(userName.begin(), userName.end());
+    std::vector<char> contentBytes(content.begin(), content.end());
+    std::vector<char> sendDateBytes(sendDate.begin(), sendDate.end());
+    for(int i=0; i<userNameBytes.size();i++)
         bytes[i+length] = userNameBytes[i];
-    length += sizeof(*userNameBytes);
+    length += userNameBytes.size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<sizeof(*contentBytes);i++)
+    for(int i=0; i<contentBytes.size();i++)
         bytes[length+i] = contentBytes[i];
-    length += sizeof(*contentBytes);
+    length += contentBytes.size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<sizeof(*sendDateBytes);i++)
-        bytes[length+i] = contentBytes[i];
-    length += sizeof(*sendDateBytes);
+    for(int i=0; i<sendDateBytes.size();i++)
+        bytes[length+i] = sendDateBytes[i];
+    length += sendDateBytes.size();
     bytes[length] = zeroByte;
     length++;
     bytes[length] = zeroByte;
     length++;
     bytes[length] = ';';
+    length++;
     return true;
 }
 
@@ -342,25 +350,23 @@ bool EncoderDecoder::logstatEncode(std::string line, char bytes[], int& length){
         return false;
     char opcodeByteArr[2];
     shortToBytes(7, opcodeByteArr);
-    char zeroByte = '\0';
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
+    bytes[2] = ';';
     length = 3;
-    bytes[2] = zeroByte;
     return true;
 }
 
 bool EncoderDecoder::statEncode(std::string userListString, char bytes[], int& length){
     char opcodeByteArr[2];
     shortToBytes(8, opcodeByteArr);
-    char zeroByte = '\0';
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
-    char const *usernameListBytes = userListString.c_str();
-    for(int i=0; i<sizeof(*usernameListBytes);i++)
-        bytes[i+length] = usernameListBytes[i];
-    length += sizeof(*usernameListBytes);
+    std::vector<char> userNameListBytes(userListString.begin(), userListString.end());
+    for(int i=0; i<userNameListBytes.size();i++)
+        bytes[i+length] = userNameListBytes[i];
+    length += userNameListBytes.size();
     bytes[length] = '\0';
     length++;
     bytes[length] = ';';
@@ -371,14 +377,13 @@ bool EncoderDecoder::statEncode(std::string userListString, char bytes[], int& l
 bool EncoderDecoder::blockEncode(std::string username, char bytes[], int& length){
     char opcodeByteArr[2];
     shortToBytes(12, opcodeByteArr);
-    char zeroByte = '\0';
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
-    char const *usernameBytes = username.c_str();
-    for(int i=0; i<sizeof(*usernameBytes);i++)
+    std::vector<char> usernameBytes(username.begin(), username.end());
+    for(int i=0; i<usernameBytes.size();i++)
         bytes[i+length] = usernameBytes[i];
-    length += sizeof(*usernameBytes);
+    length += (int)usernameBytes.size();
     bytes[length] = '\0';
     length++;
     bytes[length] = ';';

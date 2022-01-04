@@ -1,29 +1,33 @@
 package bgu.spl.net.api.bidi;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PostMessage implements Message {
-    private final List<String> userRecipientList;
+    private List<String> userRecipientList;
     private final String message;
     private final String sender;
-    private boolean received;
+    private final ConcurrentHashMap<String, Boolean> recipientsRecieved;
 
     public PostMessage(List<String> userList, String message, String sender) {
         this.userRecipientList = userList;
         this.message = message;
         this.sender = sender;
-        this.received = false;
+        this.recipientsRecieved = new ConcurrentHashMap<>();
+        for(String user : userList){
+            recipientsRecieved.put(user, false);
+        }
     }
     public List<String> getUserRecipientList() {
         return userRecipientList;
     }
 
-    public void messageReceived()
+    public void messageReceived(String userRead)
     {
-        received = true;
+        recipientsRecieved.replace(userRead,false,true);
     }
-    public boolean isReceived() {
-        return received;
+    public boolean isReceived(String userRead) {
+        return recipientsRecieved.get(userRead).booleanValue();
     }
     public String getMessage() {
         return message;

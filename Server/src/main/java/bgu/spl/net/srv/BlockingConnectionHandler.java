@@ -1,5 +1,6 @@
 package bgu.spl.net.srv;
 
+import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.api.bidi.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.srv.bidi.ConnectionHandler;
@@ -33,6 +34,7 @@ public class BlockingConnectionHandler<T> implements ConnectionHandler<T> , Runn
             out = new BufferedOutputStream(sock.getOutputStream());
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
+                /*System.out.print(read);*/
                 T nextMessage = encDec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
                     protocol.process(nextMessage);
@@ -40,7 +42,8 @@ public class BlockingConnectionHandler<T> implements ConnectionHandler<T> , Runn
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            System.out.println("Client Disconnected");
+            // protocol ah yakar tasir li bevakasha me connections aet aconnectionid sheata mahzik
         }
 
     }
@@ -60,5 +63,9 @@ public class BlockingConnectionHandler<T> implements ConnectionHandler<T> , Runn
             e.printStackTrace();
         }
 
+    }
+    public void start(int connectionID, Connections<T> connectionHandler)
+    {
+        protocol.start(connectionID, connectionHandler);
     }
 }

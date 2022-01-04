@@ -17,33 +17,47 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
         {
             pushByte(nextByte);
             if(length==2) {
-                opCode = bytesToShort(Arrays.copyOfRange(bytes, 0, 1));
+                opCode = bytesToShort(Arrays.copyOfRange(bytes, 0, 2));
                 switch(opCode) {
                     case 1:
                         operation = new RegisterOperation(opCode);
+                        break;
                     case 2:
                         operation = new LoginOperation(opCode);
+                        break;
                     case 3:
                         operation = new LogoutOperation(opCode);
+                        break;
                     case 4:
                         operation = new FollowOperation(opCode);
+                        break;
                     case 5:
                         operation = new PostMessageOperation(opCode);
+                        break;
                     case 6:
                         operation = new PrivateMessageOperation(opCode);
+                        break;
                     case 7:
                         operation = new LogStatOperation(opCode);
+                        break;
                     case 8:
                         operation = new StatOperation(opCode);
+                        break;
                     case 12:
                         operation = new BlockOperation(opCode);
+                        break;
                 }
             }
         }
         else
         {
-            if(operation.pushByte(nextByte))
-                return operation;
+            if(operation.pushByte(nextByte)) {
+                opCode = -1;
+                length = 0;
+                OperationClient op = operation;
+                operation = null;
+                return op;
+            }
         }
             return null;
     }
@@ -87,7 +101,7 @@ public class OperationEncoderDecoder implements MessageEncoderDecoder<Operation>
                 bArrACK[1] = bArrOpCode[1];
                 bArrACK[2] = bArrMessage[0];
                 bArrACK[3] = bArrMessage[1];
-                for(int i=0;i<bArrACK.length;i++)
+                for(int i=0;i<bArrOptional.length;i++)
                     bArrACK[i+4] = bArrOptional[i];
                 bArrACK[bArrACK.length-1] = ';';
                 return bArrACK;

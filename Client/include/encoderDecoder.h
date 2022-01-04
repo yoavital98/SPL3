@@ -13,7 +13,7 @@ class EncoderDecoder {
 private:
     bool registerEncode(std::vector<std::string> wordList, char bytes[], int& length);
     bool loginEncode(std::vector<std::string> wordList, char bytes[], int& length);
-    bool logoutEncode(std::vector<std::string> wordList, char bytes[], int& length);
+    bool logoutEncode(std::string line, char bytes[], int& length);
     bool followEncode(std::vector<std::string> wordList, char bytes[], int& length);
     bool postEncode(std::string content, char bytes[], int& length);
     bool pmEncode(std::string username, std::string content, char bytes[], int& length);

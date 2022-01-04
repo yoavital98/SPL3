@@ -18,7 +18,7 @@ public class UserController {
     private final ConcurrentHashMap<String, List<String>> followingBy;
     private final ConcurrentHashMap<String, List<String>> blockedBy;
     private final ConcurrentHashMap<String, List<List<Message>>> messages; // 0 for posts, 1 for privates
-    private final ConcurrentHashMap<String, List<Message>> pendingMessages;
+    private final ConcurrentHashMap<String, List<List<Message>>> receivedMessages; // 0 for posts, 1 for privates
     private final List<String> filter;
     private final Connections<Operation> connections;
 
@@ -28,7 +28,7 @@ public class UserController {
         this.followingBy = new ConcurrentHashMap<>();
         this.blockedBy = new ConcurrentHashMap<>();
         this.messages = new ConcurrentHashMap<>();
-        this.pendingMessages = new ConcurrentHashMap<>();
+        this.receivedMessages = new ConcurrentHashMap<>();
         this.filter = new ArrayList<>();
         this.connections = connections;
     }
@@ -36,16 +36,20 @@ public class UserController {
     public boolean regiser(String userName, String password, String birthday) {
         if (users.containsKey(userName))
             return false;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD-MM-YYYY");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate birth = LocalDate.parse(birthday, formatter);
         users.put(userName, new User(userName, password, birth));
         List<List<Message>> messages = new ArrayList<>();
         messages.add(new ArrayList<>());
         messages.add(new ArrayList<>());
+        List<List<Message>> receivedMessages = new ArrayList<>();
+        receivedMessages.add(new ArrayList<>());
+        receivedMessages.add(new ArrayList<>());
         this.followersOf.put(userName, new ArrayList<>());
         this.followingBy.put(userName, new ArrayList<>());
         this.blockedBy.put(userName, new ArrayList<>());
         this.messages.put(userName, messages);
+        this.receivedMessages.put(userName, receivedMessages);
         return true;
     }
 
@@ -57,16 +61,16 @@ public class UserController {
             return false;
         if(user.login(connectionId))
         {
-            for(Message message: messages.get(userName).get(0))
-                if(!((PostMessage)message).isReceived())
+            for(Message message: receivedMessages.get(userName).get(0))
+                if(!((PostMessage)message).isReceived(userName))
                 {
                     connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)1,((PostMessage)message).getSender(),((PostMessage)message).getMessage()));
-                    ((PostMessage)message).messageReceived();
+                    ((PostMessage)message).messageReceived(userName);
                 }
-            for(Message message: messages.get(userName).get(1))
+            for(Message message: receivedMessages.get(userName).get(1))
                 if(!((PrivateMessage)message).isReceived())
                 {
-                    connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)1,((PrivateMessage)message).getSender().getUserName(),((PrivateMessage)message).getMessage()));
+                    connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)0,((PrivateMessage)message).getSender().getUserName(),((PrivateMessage)message).getMessage()));
                     ((PrivateMessage)message).messageReceived();
                 }
             return true;
@@ -156,7 +160,15 @@ public class UserController {
             if (!usersRecipients.contains(follower))
                 usersRecipients.add(follower);
         }
-        messages.get(userName).get(0).add(new PostMessage(usersRecipients, message, userName));
+        PostMessage userMessage = new PostMessage(usersRecipients, message, userName);
+        messages.get(userName).get(0).add(userMessage);
+        for( String recipientName : usersRecipients){
+            receivedMessages.get(recipientName).get(0).add(userMessage);
+            if(users.get(recipientName).isLoggedIn()){
+                connections.send(users.get(recipientName).getConnectionId(), new NotificationOperation((short)9,(byte)1,userName,userMessage.getMessage()));
+                userMessage.messageReceived(recipientName);
+            }
+        }
         return true;
     }
 
@@ -172,9 +184,10 @@ public class UserController {
         }
         PrivateMessage pm = new PrivateMessage(message, users.get(userName), users.get(userRecipient), date);
         messages.get(userName).get(1).add(pm);
+        receivedMessages.get(userRecipient).get(1).add(pm);
         if(users.get(userRecipient).isLoggedIn())
         {
-            connections.send(users.get(userRecipient).getConnectionId(), new NotificationOperation((short)9,(byte)0,pm.getSender().getUserName(),pm.getMessage()));
+            connections.send(users.get(userRecipient).getConnectionId(), new NotificationOperation((short)9,(byte)0,userName,pm.getMessage()));
             pm.messageReceived();
         }
         return true;
@@ -234,14 +247,14 @@ public class UserController {
             return false;
         if (!blockedBy.get(userName).contains(blockedUserName)) { //if not already blocked
             blockedBy.get(userName).add(blockedUserName);
-            /*if (followersOf.get(userName).contains(blockedUserName))
+            if (followersOf.get(userName).contains(blockedUserName))
                 followersOf.get(userName).remove(blockedUserName);
             if (followersOf.get(blockedUserName).contains(userName))
                 followersOf.get(blockedUserName).remove(userName);
             if (followingBy.get(userName).contains(blockedUserName))
                 followingBy.get(userName).remove(blockedUserName);
             if (followingBy.get(blockedUserName).contains(userName))
-                followingBy.get(blockedUserName).remove(userName);*/
+                followingBy.get(blockedUserName).remove(userName);
             return true;
         }
         return false;

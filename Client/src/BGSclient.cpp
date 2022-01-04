@@ -47,6 +47,7 @@ void Client2Server(ConnectionHandler& connectionHandler,EncoderDecoder& encoderD
         char bytesToSend[bufsize];
         int length;
         if(encoderDecoder.Encode(line, bytesToSend, length)) {
+            std::string output(bytesToSend);
             if (!connectionHandler.sendBytes(bytesToSend, length)) {
                 std::cout << "Lost Connection With The Server, Shutting Down!\n" << std::endl;
                 run=false;

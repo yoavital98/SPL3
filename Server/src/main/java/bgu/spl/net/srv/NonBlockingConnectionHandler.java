@@ -1,5 +1,6 @@
 package bgu.spl.net.srv;
 
+import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.api.bidi.MessageEncoderDecoder;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.srv.bidi.ConnectionHandler;
@@ -117,5 +118,9 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T>, ja
     public void send(T msg) {
             writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
             reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+    }
+    public void start(int connectionID, Connections<T> connectionHandler)
+    {
+        protocol.start(connectionID, connectionHandler);
     }
 }

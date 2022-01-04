@@ -18,7 +18,7 @@ public class LoginOperation extends OperationClient {
     public boolean pushByte(byte nextByte) {
         if(nextByte == ';')
             return true;
-        if(nextByte==(byte)0)
+        if(nextByte=='\0')
         {
             if(getUserName().equals("")){
                 userName = bytesToString();
@@ -29,7 +29,7 @@ public class LoginOperation extends OperationClient {
         }
         else if(password.equals(""))
             pushNextByte(nextByte);
-        else if(nextByte==(byte)1)
+        else if(nextByte=='1')
             captcha=true;
         return false;
     }

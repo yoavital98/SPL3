@@ -29,16 +29,19 @@ public class BGSProtocol implements BidiMessagingProtocol<Operation>{
                     connections.send(connectionId, new ACKOperation((short) 10, (short) 1, "Registered Successfully"));
                 else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 1));
+                break;
             case 2:
                 if (userController.login(((LoginOperation) operation).getUserName(), ((LoginOperation) operation).getPassword(), connectionId))
                     connections.send(connectionId, new ACKOperation((short) 10, (short) 2, "Logged in Successfully"));
                 else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 2));
+                break;
             case 3:
                 if (userController.logout(userName))
                     connections.send(connectionId, new ACKOperation((short) 10, (short) 3, "Logged out Successfully"));
                 else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 3));
+                break;
             case 4:
                 if (userController.followOrUnfollow(((FollowOperation) operation).getFollowOrUnfollow(), userName, ((FollowOperation) operation).getUserName())) {
                     if (((FollowOperation) operation).getFollowOrUnfollow() == 0)
@@ -47,16 +50,19 @@ public class BGSProtocol implements BidiMessagingProtocol<Operation>{
                         connections.send(connectionId, new ACKOperation((short) 10, (short) 4, ("Unfollowed " + ((FollowOperation) operation).getUserName() + " Successfully")));
                 } else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 4));
+                break;
             case 5:
                 if(userController.postMessage(userName, (((PostMessageOperation)operation).getContent())))
                     connections.send(connectionId, new ACKOperation((short) 10, (short) 5, "Message has been posted Successfully"));
                 else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 5));
+                break;
             case 6:
                 if(userController.sendPrivateMessage(userName, (((PrivateMessageOperation)operation).getUserName()), (((PrivateMessageOperation)operation).getContent()), (((PrivateMessageOperation)operation).getDateAndTime())))
                     connections.send(connectionId, new ACKOperation((short) 10, (short) 6, "Message has been posted Successfully"));
                 else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 6));
+                break;
             case 7:
                 List<String> logStatus = userController.logstat(userName);
                 if(logStatus!=null){
@@ -65,6 +71,7 @@ public class BGSProtocol implements BidiMessagingProtocol<Operation>{
                 }
                 else
                     connections.send(connectionId, new ErrorOperation((short)11, (short)7));
+                break;
             case 8:
                 List<String> specificUsersStatus = userController.stat(userName, (((StatOperation)operation).getUserNamesList()));
                 if(specificUsersStatus != null){
@@ -73,9 +80,16 @@ public class BGSProtocol implements BidiMessagingProtocol<Operation>{
                 }
                 else
                     connections.send(connectionId, new ErrorOperation((short)11, (short)8));
+                break;
             case 12:
+                if(userController.block(userName, (((BlockOperation)operation).getUserName())))
+                    connections.send(connectionId, new ACKOperation((short)10, (short)12, "Successfully blocked "+(((BlockOperation)operation).getUserName())));
+                else
+                    connections.send(connectionId, new ErrorOperation((short)11, (short)12));
+                break;
         }
     }
+
 
     @Override
     public boolean shouldTerminate() {
