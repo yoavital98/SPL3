@@ -34,4 +34,7 @@ public abstract class OperationClient implements Operation {
         length = 0;
         return output;
     }
+    public int getLength() {
+        return length;
+    }
 }

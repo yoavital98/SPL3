@@ -12,16 +12,18 @@ public class FollowOperation extends OperationClient {
 
     @Override
     public boolean pushByte(byte nextByte) {
-        if(followOrUnfollow==-1)
+        if(nextByte == ';')
+            return true;
+        if(followOrUnfollow==-1 && getLength()==1)
         {
-            if(nextByte==(byte)0)
+            bytesToString();
+            if(nextByte==0)
                 followOrUnfollow = 0;
             else
                 followOrUnfollow = 1;
         }
-        else if(nextByte == ';') {
+        else if(nextByte == '\0' && followOrUnfollow!=-1) {
             userName = bytesToString();
-            return true;
         }
         else
             pushNextByte(nextByte);

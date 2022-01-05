@@ -7,6 +7,10 @@
 /**
 * This code assumes that the server replies the exact text the client sent it (as opposed to the practical session example)
 */
+std::condition_variable cv;
+std::mutex mtx;
+std::unique_lock<std::mutex> lck(mtx);
+
 void Server2Client(ConnectionHandler& connectionHandler, EncoderDecoder& encoderDecoder, std::atomic<bool>& run)
 {
     while(run)
@@ -24,11 +28,14 @@ void Server2Client(ConnectionHandler& connectionHandler, EncoderDecoder& encoder
             run = false;
             break;
         }
-        if(encoderDecoder.Decode(answer, charVector))
-        {
+        if(encoderDecoder.Decode(answer, charVector)) {
             std::cout << answer << std::endl;
-            if(answer=="ACK 3 Logged out Successfully")
-                run = false;
+            if (answer == "ACK 3 Logged out Successfully") {
+            run = false;
+            cv.notify_all();
+        }
+            if(answer == "ERROR 3")
+                cv.notify_all();
         }
         else
         {
@@ -57,6 +64,8 @@ void Client2Server(ConnectionHandler& connectionHandler,EncoderDecoder& encoderD
         else{
             std::cout << "Invalid Command, Please Try Again!" << std::endl;
         }
+        if(line=="LOGOUT")
+            cv.wait(lck);
     }
 }
 

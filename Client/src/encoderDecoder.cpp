@@ -91,24 +91,21 @@ bool EncoderDecoder::Decode(std::string& line, std::vector<char> messageToDecode
         switch(opCode){
             case 9: {
                 std::string notificaion;
-                if(messageToDecode.at(3)=='0')
+                if(messageToDecode.at(2)=='\0')
                     notificaion = "PM";
                 else
                     notificaion = "Public";
-                    int firstSeparator=0;
-                while(messageToDecode.at(firstSeparator) != '\0')
-                    firstSeparator++;
-                int secondSeparator=firstSeparator+1;
+                int firstSeparator=3;
+                int secondSeparator=firstSeparator;
                 while(messageToDecode.at(secondSeparator) != '\0')
                     secondSeparator++;
-                char* postingUserBytes = new char[firstSeparator-3];
-                char* contentBytes = new char[secondSeparator-firstSeparator-1];
-                for(int i = 4; i < firstSeparator; i++)
-                    postingUserBytes[i-4] = messageToDecode.at(i);
-                for(int i = firstSeparator+1; i < secondSeparator; i++)
-                    contentBytes[i-firstSeparator-1] = messageToDecode.at(i);
-                std::string postingUser(postingUserBytes);
-                std::string content(contentBytes);
+                int thirdSeparator = secondSeparator + 1;
+                while(messageToDecode.at(thirdSeparator) != ';')
+                    thirdSeparator++;
+                char* postingUserBytes = &messageToDecode[3];
+                char* contentBytes = &messageToDecode[secondSeparator+1];
+                std::string postingUser(postingUserBytes,0, secondSeparator);
+                std::string content(contentBytes, 0, thirdSeparator);
                 line = "NOTIFICATION "+notificaion+" "+postingUser+" "+content;
                 return true;
             }
@@ -222,13 +219,14 @@ bool EncoderDecoder::registerEncode(std::vector<std::string> wordList, char byte
 }
 
 bool EncoderDecoder::loginEncode(std::vector<std::string> wordList, char bytes[], int& length){
-    if(wordList.size() != 2)
+    if(wordList.size() != 3)
         return false;
     char opcodeByteArr[2];
     shortToBytes(2, opcodeByteArr);
     char zeroByte = '\0';
     std::vector<char> userNameBytes(wordList[0].begin(), wordList[0].end());
     std::vector<char> passwordBytes(wordList[1].begin(), wordList[1].end());
+    std::vector<char> captchaBytes(wordList[2].begin(), wordList[2].end());
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
@@ -242,8 +240,9 @@ bool EncoderDecoder::loginEncode(std::vector<std::string> wordList, char bytes[]
     length += wordList[1].size();
     bytes[length] = zeroByte;
     length++;
-    bytes[length] = '1';
-    length++;
+    for(int i=0; i<wordList[2].size();i++)
+        bytes[length+i] = captchaBytes[i];
+    length += wordList[2].size();
     bytes[length] = ';';
     length++;
     return true;
@@ -274,7 +273,7 @@ bool EncoderDecoder::followEncode(std::vector<std::string> wordList, char bytes[
     else
         return false;
     char zeroByte = '\0';
-    std::vector<char> userNameBytes(wordList[0].begin(), wordList[0].end());
+    std::vector<char> userNameBytes(wordList[1].begin(), wordList[1].end());
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     bytes[2] = followByteArr[0];

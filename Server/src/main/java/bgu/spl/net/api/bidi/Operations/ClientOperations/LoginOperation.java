@@ -41,7 +41,7 @@ public class LoginOperation extends OperationClient {
     public String getPassword() {
         return password;
     }
-    public boolean isCaptcha() {
+    public boolean getCaptcha() {
         return captcha;
     }
 

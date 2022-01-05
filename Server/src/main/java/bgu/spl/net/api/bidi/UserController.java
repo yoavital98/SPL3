@@ -29,7 +29,8 @@ public class UserController {
         this.blockedBy = new ConcurrentHashMap<>();
         this.messages = new ConcurrentHashMap<>();
         this.receivedMessages = new ConcurrentHashMap<>();
-        this.filter = new ArrayList<>();
+        String[] filter = {"fuck", "FUCK" ,"Bitch", "BITCH", "bitch", "ALGO", "YOAVI", "ASSHOLE", "Tivaonut", "Semol"};
+        this.filter = Arrays.asList(filter);
         this.connections = connections;
     }
 
@@ -53,8 +54,8 @@ public class UserController {
         return true;
     }
 
-    public boolean login(String userName, String password, int connectionId) {
-        if (!users.containsKey(userName))
+    public boolean login(String userName, String password, int connectionId, boolean captcha) {
+        if (!users.containsKey(userName) || !captcha)
             return false;
         User user = users.get(userName);
         if (!user.validatePassword(password))
@@ -70,7 +71,7 @@ public class UserController {
             for(Message message: receivedMessages.get(userName).get(1))
                 if(!((PrivateMessage)message).isReceived())
                 {
-                    connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)0,((PrivateMessage)message).getSender().getUserName(),((PrivateMessage)message).getMessage()));
+                    connections.send(users.get(userName).getConnectionId(), new NotificationOperation((short)9,(byte)0,((PrivateMessage)message).getSender().getUserName(),((PrivateMessage)message).getMessage()+" "+((PrivateMessage)message).getDate()));
                     ((PrivateMessage)message).messageReceived();
                 }
             return true;
@@ -126,6 +127,9 @@ public class UserController {
             return false;
         if (!users.get(userName).isLoggedIn())
             return false;
+        for (String filter : filter) {
+            message = message.replaceAll(filter, "<filtered>");
+        }
         String messageCopy = message;
         List<String> usersMentioned = new ArrayList<>();
         int index;
@@ -144,6 +148,7 @@ public class UserController {
             }
             if (endIndex != -1) {
                 userFound = messageCopy.substring(0, endIndex);
+                if(!blockedBy.get(userFound).contains(userName))
                 usersMentioned.add(userFound);
                 messageCopy = messageCopy.substring(endIndex, messageCopy.length());
             } else {
@@ -187,7 +192,7 @@ public class UserController {
         receivedMessages.get(userRecipient).get(1).add(pm);
         if(users.get(userRecipient).isLoggedIn())
         {
-            connections.send(users.get(userRecipient).getConnectionId(), new NotificationOperation((short)9,(byte)0,userName,pm.getMessage()));
+            connections.send(users.get(userRecipient).getConnectionId(), new NotificationOperation((short)9,(byte)0,userName,pm.getMessage()+" "+pm.getDate()));
             pm.messageReceived();
         }
         return true;

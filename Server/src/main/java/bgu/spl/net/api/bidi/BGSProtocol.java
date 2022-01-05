@@ -6,7 +6,7 @@ import java.util.List;
 
 public class BGSProtocol implements BidiMessagingProtocol<Operation>{
     private final UserController userController;
-    private final String userName;
+    private String userName;
     private int connectionId;
     private Connections<Operation> connections;
 
@@ -31,8 +31,13 @@ public class BGSProtocol implements BidiMessagingProtocol<Operation>{
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 1));
                 break;
             case 2:
-                if (userController.login(((LoginOperation) operation).getUserName(), ((LoginOperation) operation).getPassword(), connectionId))
+                if(userName=="")
+                if (userController.login(((LoginOperation) operation).getUserName(), ((LoginOperation) operation).getPassword(), connectionId, ((LoginOperation) operation).getCaptcha())) {
                     connections.send(connectionId, new ACKOperation((short) 10, (short) 2, "Logged in Successfully"));
+                    this.userName = ((LoginOperation) operation).getUserName();
+                }
+                else
+                    connections.send(connectionId, new ErrorOperation((short) 11, (short) 2));
                 else
                     connections.send(connectionId, new ErrorOperation((short) 11, (short) 2));
                 break;
