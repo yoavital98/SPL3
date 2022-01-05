@@ -7,11 +7,7 @@
 /**
 * This code assumes that the server replies the exact text the client sent it (as opposed to the practical session example)
 */
-std::condition_variable cv;
-std::mutex mtx;
-std::unique_lock<std::mutex> lck(mtx);
-
-void Server2Client(ConnectionHandler& connectionHandler, EncoderDecoder& encoderDecoder, std::atomic<bool>& run)
+void Server2Client(ConnectionHandler& connectionHandler, EncoderDecoder& encoderDecoder, std::atomic<bool>& run, std::condition_variable& cv, std::unique_lock<std::mutex>& lck)
 {
     while(run)
     {
@@ -45,7 +41,7 @@ void Server2Client(ConnectionHandler& connectionHandler, EncoderDecoder& encoder
         }
     }
 }
-void Client2Server(ConnectionHandler& connectionHandler,EncoderDecoder& encoderDecoder, std::atomic<bool>& run) {
+void Client2Server(ConnectionHandler& connectionHandler,EncoderDecoder& encoderDecoder, std::atomic<bool>& run, std::condition_variable& cv, std::unique_lock<std::mutex>& lck) {
     while (run) {
         const short bufsize = 1024;
         char buf[bufsize];
@@ -82,10 +78,13 @@ int main (int argc, char *argv[]) {
         std::cerr << "Cannot connect to " << host << ":" << port << std::endl;
         return 1;
     }
+    std::condition_variable cv;
+    std::mutex mtx;
+    std::unique_lock<std::mutex> lck(mtx);
     std::atomic<bool> terminate_Client(true);
     EncoderDecoder encoderDecoder;
-    std::thread server2ClientThread(&Server2Client, std::ref(connectionHandler),std::ref(encoderDecoder), std::ref(terminate_Client));
-    std::thread client2ServerThread(&Client2Server, std::ref(connectionHandler),std::ref(encoderDecoder), std::ref(terminate_Client));
+    std::thread server2ClientThread(&Server2Client, std::ref(connectionHandler),std::ref(encoderDecoder), std::ref(terminate_Client), std::ref(cv), std::ref(lck));
+    std::thread client2ServerThread(&Client2Server, std::ref(connectionHandler),std::ref(encoderDecoder), std::ref(terminate_Client), std::ref(cv), std::ref(lck));
     server2ClientThread.join();
     client2ServerThread.join();
     return 0;
