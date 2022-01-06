@@ -117,7 +117,7 @@ bool EncoderDecoder::Decode(std::string& line, std::vector<char> messageToDecode
                 messageOpCode = bytesToShort(messageOP);
                 delete[](messageOP);
                 char* contentBytes = new char[messageToDecode.size()-4];
-                for(int i = 4; i < messageToDecode.size()-1; i++)
+                for(int i = 4; i <(int)messageToDecode.size()-1; i++)
                     contentBytes[i-4] = messageToDecode.at(i);
                 std::string content(contentBytes, 0, messageToDecode.size()-5);
                 delete[](contentBytes);
@@ -198,17 +198,17 @@ bool EncoderDecoder::registerEncode(std::vector<std::string> wordList, char byte
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
-    for(int i=0; i<userNameBytes.size();i++)
+    for(int i=0; i<(int)userNameBytes.size();i++)
         bytes[i+length] = userNameBytes[i];
     length += userNameBytes.size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<passwordBytes.size();i++)
+    for(int i=0; i<(int)passwordBytes.size();i++)
         bytes[length+i] = passwordBytes[i];
     length += passwordBytes.size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<birthDayBytes.size();i++)
+    for(int i=0; i<(int)birthDayBytes.size();i++)
         bytes[length+i] = birthDayBytes[i];
     length += birthDayBytes.size();
     bytes[length] = zeroByte;
@@ -230,17 +230,17 @@ bool EncoderDecoder::loginEncode(std::vector<std::string> wordList, char bytes[]
     bytes[0] = opcodeByteArr[0];
     bytes[1] = opcodeByteArr[1];
     length = 2;
-    for(int i=0; i<wordList[0].size();i++)
+    for(int i=0; i<(int)wordList[0].size();i++)
         bytes[i+length] = userNameBytes[i];
     length += wordList[0].size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<wordList[1].size();i++)
+    for(int i=0; i<(int)wordList[1].size();i++)
         bytes[length+i] = passwordBytes[i];
     length += wordList[1].size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<wordList[2].size();i++)
+    for(int i=0; i<(int)wordList[2].size();i++)
         bytes[length+i] = captchaBytes[i];
     length += wordList[2].size();
     bytes[length] = ';';
@@ -279,7 +279,7 @@ bool EncoderDecoder::followEncode(std::vector<std::string> wordList, char bytes[
     bytes[2] = followByteArr[0];
     bytes[3] = followByteArr[1];
     length = 4;
-    for(int i=0; i<userNameBytes.size();i++)
+    for(int i=0; i<(int)userNameBytes.size();i++)
         bytes[i+length] = userNameBytes[i];
     length += userNameBytes.size();
     bytes[length] = zeroByte;
@@ -298,7 +298,7 @@ bool EncoderDecoder::postEncode(std::string content, char bytes[], int& length){
     bytes[1] = opcodeByteArr[1];
     length = 2;
     std::vector<char> contentBytes(content.begin(), content.end());
-    for(int i=0; i<contentBytes.size();i++)
+    for(int i=0; i<(int)contentBytes.size();i++)
         bytes[i+length] = contentBytes[i];
     length += contentBytes.size();
     bytes[length] = zeroByte;
@@ -322,17 +322,17 @@ bool EncoderDecoder::pmEncode(std::string userName, std::string content, char by
     std::vector<char> userNameBytes(userName.begin(), userName.end());
     std::vector<char> contentBytes(content.begin(), content.end());
     std::vector<char> sendDateBytes(sendDate.begin(), sendDate.end());
-    for(int i=0; i<userNameBytes.size();i++)
+    for(int i=0; i<(int)userNameBytes.size();i++)
         bytes[i+length] = userNameBytes[i];
     length += userNameBytes.size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<contentBytes.size();i++)
+    for(int i=0; i<(int)contentBytes.size();i++)
         bytes[length+i] = contentBytes[i];
     length += contentBytes.size();
     bytes[length] = zeroByte;
     length++;
-    for(int i=0; i<sendDateBytes.size();i++)
+    for(int i=0; i<(int)sendDateBytes.size();i++)
         bytes[length+i] = sendDateBytes[i];
     length += sendDateBytes.size();
     bytes[length] = zeroByte;
@@ -363,7 +363,7 @@ bool EncoderDecoder::statEncode(std::string userListString, char bytes[], int& l
     bytes[1] = opcodeByteArr[1];
     length = 2;
     std::vector<char> userNameListBytes(userListString.begin(), userListString.end());
-    for(int i=0; i<userNameListBytes.size();i++)
+    for(int i=0; i<(int)userNameListBytes.size();i++)
         bytes[i+length] = userNameListBytes[i];
     length += userNameListBytes.size();
     bytes[length] = '\0';
@@ -380,7 +380,7 @@ bool EncoderDecoder::blockEncode(std::string username, char bytes[], int& length
     bytes[1] = opcodeByteArr[1];
     length = 2;
     std::vector<char> usernameBytes(username.begin(), username.end());
-    for(int i=0; i<usernameBytes.size();i++)
+    for(int i=0; i<(int)usernameBytes.size();i++)
         bytes[i+length] = usernameBytes[i];
     length += (int)usernameBytes.size();
     bytes[length] = '\0';
