@@ -34,7 +34,7 @@ public class UserController {
         this.connections = connections;
     }
 
-    public boolean regiser(String userName, String password, String birthday) {
+    public synchronized boolean regiser(String userName, String password, String birthday) {
         if (users.containsKey(userName))
             return false;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -54,7 +54,7 @@ public class UserController {
         return true;
     }
 
-    public boolean login(String userName, String password, int connectionId, boolean captcha) {
+    public synchronized boolean login(String userName, String password, int connectionId, boolean captcha) {
         if (!users.containsKey(userName) || !captcha)
             return false;
         User user = users.get(userName);
@@ -229,6 +229,8 @@ public class UserController {
                 User user = users.get(userName);
                 log.add(getData(user));
             }
+            else
+                return null;
         }
         return log;
     }
@@ -252,6 +254,8 @@ public class UserController {
             return false;
         if (!blockedBy.get(userName).contains(blockedUserName)) { //if not already blocked
             blockedBy.get(userName).add(blockedUserName);
+            if (!blockedBy.get(blockedUserName).contains(userName)) //if not already blocked
+                blockedBy.get(blockedUserName).add(userName);
             if (followersOf.get(userName).contains(blockedUserName))
                 followersOf.get(userName).remove(blockedUserName);
             if (followersOf.get(blockedUserName).contains(userName))
