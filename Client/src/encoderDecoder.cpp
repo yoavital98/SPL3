@@ -138,7 +138,7 @@ bool EncoderDecoder::Decode(std::string& line, std::vector<char> messageToDecode
                 return false;
         }
     }
-    catch(std::exception e)
+    catch(std::exception const&)
     {
         return false;
     }
@@ -178,7 +178,7 @@ bool validDate(std::basic_string<char> &date) {
         if (std::stoi(year) < 1900 || std::stoi(year) > 2022)
             return false;
     }
-    catch(std::exception e){
+    catch(std::exception const&){
         return false;
     }
     return true;
